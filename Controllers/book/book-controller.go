@@ -1,43 +1,21 @@
-package book
+package bookcontroller
 
 import (
 	"encoding/json"
 	"net/http"
 
+	configdb "github.com/hzprog/restapi/DBConfig"
+	Book "github.com/hzprog/restapi/Models/book"
+
 	"github.com/gorilla/mux"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
 )
-
-const Dsn = "root:password@tcp(localhost)/demo?parseTime=true"
-
-var Db *gorm.DB
-var Err error
-
-type Book struct {
-	gorm.Model
-
-	Isbn   string `json:"isbn"`
-	Title  string `json:"title"`
-	Author string `json:"author"`
-}
-
-func InitilizeMigation() {
-	Db, Err = gorm.Open(mysql.Open(Dsn), &gorm.Config{})
-	if Err != nil {
-		panic("failed to connect database")
-	}
-
-	//migrate the schemes
-	Db.AutoMigrate(&Book{})
-}
 
 //get all books
 func GetBooks(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	var books []Book
+	var books []Book.Book
 
-	Db.Find(&books)
+	configdb.Db.Find(&books)
 
 	json.NewEncoder(w).Encode(books)
 }
@@ -48,8 +26,8 @@ func GetBook(w http.ResponseWriter, r *http.Request) {
 
 	params := mux.Vars(r)
 
-	var book Book
-	Db.First(&book, params["id"])
+	var book Book.Book
+	configdb.Db.First(&book, params["id"])
 
 	json.NewEncoder(w).Encode(book)
 }
@@ -58,9 +36,9 @@ func GetBook(w http.ResponseWriter, r *http.Request) {
 func CreateBook(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	var book Book
+	var book Book.Book
 	json.NewDecoder(r.Body).Decode(&book)
-	Db.Create(&book)
+	configdb.Db.Create(&book)
 
 	json.NewEncoder(w).Encode(book)
 }
@@ -70,12 +48,12 @@ func UpdateBook(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r)
 
-	var book Book
-	Db.First(&book, params["id"])
+	var book Book.Book
+	configdb.Db.First(&book, params["id"])
 
 	json.NewDecoder(r.Body).Decode(&book)
 
-	Db.Save(&book)
+	configdb.Db.Save(&book)
 
 	json.NewEncoder(w).Encode(book)
 }
@@ -86,8 +64,8 @@ func DeleteBook(w http.ResponseWriter, r *http.Request) {
 
 	params := mux.Vars(r)
 
-	var book Book
-	Db.Delete(&book, params["id"])
+	var book Book.Book
+	configdb.Db.Delete(&book, params["id"])
 
 	json.NewEncoder(w).Encode("The book has been deleted successfully")
 }

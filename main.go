@@ -4,24 +4,15 @@ import (
 	"log"
 	"net/http"
 
-	book "github.com/hzprog/restapi/book"
-
-	"github.com/gorilla/mux"
+	configdb "github.com/hzprog/restapi/DBConfig"
+	models "github.com/hzprog/restapi/Models"
+	routeHandler "github.com/hzprog/restapi/RouteHandler"
 )
 
-func initilizeRouter() {
-	r := mux.NewRouter()
-	r.HandleFunc("/api/books", book.GetBooks).Methods("GET")
-	r.HandleFunc("/api/books/{id}", book.GetBook).Methods("GET")
-	r.HandleFunc("/api/books", book.CreateBook).Methods("POST")
-	r.HandleFunc("/api/books/{id}", book.UpdateBook).Methods("PUT")
-	r.HandleFunc("/api/books/{id}", book.DeleteBook).Methods("DELETE")
-
-	log.Fatal(http.ListenAndServe(":8000", r))
-}
-
 func main() {
+	configdb.Config()
+	models.InitilizeMigation()
+	router := routeHandler.InitilizeRouter()
 
-	book.InitilizeMigation()
-	initilizeRouter()
+	log.Fatal(http.ListenAndServe(":8000", router))
 }
