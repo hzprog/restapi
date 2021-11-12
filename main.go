@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -16,5 +17,7 @@ func main() {
 	models.InitilizeMigation()
 	router := routeHandler.InitilizeRouter()
 
-	log.Fatal(http.ListenAndServe(":"+Env.GetEnvVar("APP_PORT"), router))
+	port := Env.GetEnvVar("APP_PORT")
+
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), router))
 }
