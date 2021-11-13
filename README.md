@@ -2,7 +2,7 @@
 
 ## **Description**
 
-Simple RESTFull API for learning purposes, using Golang and MySql as Database with MVC
+Simple RESTFull API for learning purposes, using Golang and MySql with GORM as ORM as Database with MVC
 
 ## **Dependecies**
 
