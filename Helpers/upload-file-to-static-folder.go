@@ -8,8 +8,9 @@ import (
 	"path/filepath"
 )
 
-func Upload(req *http.Request, paramName string) (os.File, error) {
+func UploadFile(req *http.Request, paramName string) os.File {
 	req.ParseMultipartForm(10 << 20)
+
 	file, multipartFileHeader, err := req.FormFile("image")
 	if err != nil {
 		fmt.Println("error while getting the File")
@@ -21,10 +22,12 @@ func Upload(req *http.Request, paramName string) (os.File, error) {
 	tempFile, err := ioutil.TempFile("static", "upload-*"+extension)
 
 	fileBytes, err := ioutil.ReadAll(file)
+
 	if err != nil {
 		fmt.Println(err)
 	}
+
 	tempFile.Write(fileBytes)
 
-	return *tempFile, err
+	return *tempFile
 }
