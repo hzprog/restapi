@@ -2,7 +2,6 @@ package Book
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"path"
 
@@ -40,18 +39,14 @@ func GetBook(w http.ResponseWriter, r *http.Request) {
 func CreateBook(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	tempFile, err := helpers.Upload(r, "image")
-
-	if err != nil {
-		fmt.Println(err)
-	}
+	uploadedFile := helpers.UploadFile(r, "image")
 
 	var book Book.Book
 
 	book.Isbn = r.FormValue("isbn")
 	book.Title = r.FormValue("title")
 	book.Author = r.FormValue("author")
-	book.Image = path.Base(tempFile.Name())
+	book.Image = path.Base(uploadedFile.Name())
 
 	configdb.Db.Create(&book)
 
