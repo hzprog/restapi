@@ -1,1 +1,3 @@
 config2.env
+static/*
+*.exe
