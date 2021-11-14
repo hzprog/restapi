@@ -12,12 +12,12 @@ import (
 )
 
 func main() {
-
 	configdb.Config()
 	models.InitilizeMigation()
 	router := routeHandler.InitilizeRouter()
 
 	port := Env.GetEnvVar("APP_PORT")
 
+	log.Printf("Server started on: http://localhost:%s", port)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), router))
 }
