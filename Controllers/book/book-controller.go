@@ -1,8 +1,12 @@
-package bookcontroller
+package Book
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"path"
+
+	helpers "github.com/hzprog/restapi/Helpers"
 
 	configdb "github.com/hzprog/restapi/DBConfig"
 	Book "github.com/hzprog/restapi/Models/book"
@@ -36,8 +40,19 @@ func GetBook(w http.ResponseWriter, r *http.Request) {
 func CreateBook(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
+	tempFile, err := helpers.Upload(r, "image")
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
 	var book Book.Book
-	json.NewDecoder(r.Body).Decode(&book)
+
+	book.Isbn = r.FormValue("isbn")
+	book.Title = r.FormValue("title")
+	book.Author = r.FormValue("author")
+	book.Image = path.Base(tempFile.Name())
+
 	configdb.Db.Create(&book)
 
 	json.NewEncoder(w).Encode(book)
