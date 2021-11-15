@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"path"
+	"strconv"
 
 	helpers "github.com/hzprog/restapi/Helpers"
 
@@ -19,7 +20,16 @@ func GetBooks(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	var books []Book.Book
 
-	err := configdb.Db.Find(&books).Error
+	params := mux.Vars(r)
+
+	limit, _ := strconv.Atoi(params["limit"])
+
+	id := r.FormValue("id")
+	if len(id) == 0 {
+		id = "0"
+	}
+
+	err := configdb.Db.Limit(limit).Find(&books, "id > ?", id).Error
 	if err != nil {
 		json.NewEncoder(w).Encode("Error couldn't find when retreiving books")
 		fmt.Println(err)
