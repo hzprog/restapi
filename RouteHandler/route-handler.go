@@ -5,6 +5,7 @@ import (
 
 	Book "github.com/hzprog/restapi/Controllers/book"
 	User "github.com/hzprog/restapi/Controllers/user"
+	Mid "github.com/hzprog/restapi/Middlewares"
 
 	"github.com/gorilla/mux"
 )
@@ -15,11 +16,11 @@ func InitilizeRouter() *mux.Router {
 
 	api := router.PathPrefix("/api").Subrouter()
 	//routes for book
-	api.HandleFunc("/books/{limit:[0-9]+}", Book.GetBooks).Methods("GET")
-	api.HandleFunc("/book/{id:[0-9]+}", Book.GetBook).Methods("GET")
-	api.HandleFunc("/books", Book.CreateBook).Methods("POST")
-	api.HandleFunc("/books/{id:[0-9]+}", Book.UpdateBook).Methods("PUT")
-	api.HandleFunc("/books/{id:[0-9]+}", Book.DeleteBook).Methods("DELETE")
+	api.HandleFunc("/books/{limit:[0-9]+}", Mid.IsAuthorized(Book.GetBooks)).Methods("GET")
+	api.HandleFunc("/book/{id:[0-9]+}", Mid.IsAuthorized(Book.GetBook)).Methods("GET")
+	api.HandleFunc("/books", Mid.IsAuthorized(Book.CreateBook)).Methods("POST")
+	api.HandleFunc("/books/{id:[0-9]+}", Mid.IsAuthorized(Book.UpdateBook)).Methods("PUT")
+	api.HandleFunc("/books/{id:[0-9]+}", Mid.IsAuthorized((Book.DeleteBook))).Methods("DELETE")
 
 	//routes for user
 	api.HandleFunc("/signup", User.Signup).Methods("POST")
