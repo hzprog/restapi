@@ -19,7 +19,17 @@ func GetBooks(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	var books []Book.Book
 
-	configdb.Db.Find(&books)
+	err := configdb.Db.Find(&books).Error
+	if err != nil {
+		json.NewEncoder(w).Encode("Error couldn't find when retreiving books")
+		fmt.Println(err)
+		return
+	}
+
+	if len(books) < 1 {
+		json.NewEncoder(w).Encode("no book found try adding a book")
+		return
+	}
 
 	json.NewEncoder(w).Encode(books)
 }
