@@ -2,6 +2,7 @@ package Book
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"path"
 
@@ -30,7 +31,13 @@ func GetBook(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 
 	var book Book.Book
-	configdb.Db.First(&book, params["id"])
+
+	err := configdb.Db.First(&book, params["id"]).Error
+	if err != nil {
+		json.NewEncoder(w).Encode("Can't find a book with that id")
+		fmt.Println(err)
+		return
+	}
 
 	json.NewEncoder(w).Encode(book)
 }
@@ -48,7 +55,12 @@ func CreateBook(w http.ResponseWriter, r *http.Request) {
 	book.Author = r.FormValue("author")
 	book.Image = path.Base(uploadedFile.Name())
 
-	configdb.Db.Create(&book)
+	err := configdb.Db.Create(&book).Error
+	if err != nil {
+		json.NewEncoder(w).Encode("Error couldn't create the book")
+		fmt.Println(err)
+		return
+	}
 
 	json.NewEncoder(w).Encode(book)
 }
@@ -59,11 +71,22 @@ func UpdateBook(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 
 	var book Book.Book
-	configdb.Db.First(&book, params["id"])
+
+	err := configdb.Db.First(&book, params["id"]).Error
+	if err != nil {
+		json.NewEncoder(w).Encode("Can't find a book with that id")
+		fmt.Println(err)
+		return
+	}
 
 	json.NewDecoder(r.Body).Decode(&book)
 
-	configdb.Db.Save(&book)
+	err = configdb.Db.Save(&book).Error
+	if err != nil {
+		json.NewEncoder(w).Encode("Error couldn't update the book")
+		fmt.Println(err)
+		return
+	}
 
 	json.NewEncoder(w).Encode(book)
 }
@@ -76,11 +99,21 @@ func DeleteBook(w http.ResponseWriter, r *http.Request) {
 
 	var book Book.Book
 
-	configdb.Db.First(&book, params["id"])
+	err := configdb.Db.First(&book, params["id"]).Error
+	if err != nil {
+		json.NewEncoder(w).Encode("Can't find a book with that id")
+		fmt.Println(err)
+		return
+	}
 
 	helpers.DeleteFile(book.Image)
 
-	configdb.Db.Delete(&book)
+	err = configdb.Db.Delete(&book).Error
+	if err != nil {
+		json.NewEncoder(w).Encode("Error couldn't Delete the book")
+		fmt.Println(err)
+		return
+	}
 
 	json.NewEncoder(w).Encode("The book has been deleted successfully")
 }
