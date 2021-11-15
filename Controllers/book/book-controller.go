@@ -31,6 +31,7 @@ func GetBooks(w http.ResponseWriter, r *http.Request) {
 
 	err := configdb.Db.Limit(limit).Find(&books, "id > ?", id).Error
 	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode("Error couldn't find when retreiving books")
 		fmt.Println(err)
 		return
@@ -77,6 +78,7 @@ func CreateBook(w http.ResponseWriter, r *http.Request) {
 
 	err := configdb.Db.Create(&book).Error
 	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode("Error couldn't create the book")
 		fmt.Println(err)
 		return
@@ -103,6 +105,7 @@ func UpdateBook(w http.ResponseWriter, r *http.Request) {
 
 	err = configdb.Db.Save(&book).Error
 	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode("Error couldn't update the book")
 		fmt.Println(err)
 		return
@@ -130,6 +133,7 @@ func DeleteBook(w http.ResponseWriter, r *http.Request) {
 
 	err = configdb.Db.Delete(&book).Error
 	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode("Error couldn't Delete the book")
 		fmt.Println(err)
 		return
