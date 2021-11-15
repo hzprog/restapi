@@ -75,7 +75,12 @@ func DeleteBook(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 
 	var book Book.Book
-	configdb.Db.Delete(&book, params["id"])
+
+	configdb.Db.First(&book, params["id"])
+
+	helpers.DeleteFile(book.Image)
+
+	configdb.Db.Delete(&book)
 
 	json.NewEncoder(w).Encode("The book has been deleted successfully")
 }
