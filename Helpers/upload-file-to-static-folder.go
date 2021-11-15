@@ -31,3 +31,14 @@ func UploadFile(req *http.Request, paramName string) os.File {
 
 	return *tempFile
 }
+
+func DeleteFile(path string) {
+	err := os.Remove(path)
+
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Printf("File deleted %s successfully", path)
+}
