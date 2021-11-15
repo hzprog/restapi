@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
+	jwt "github.com/dgrijalva/jwt-go"
 	configdb "github.com/hzprog/restapi/DBConfig"
 	dbconfig "github.com/hzprog/restapi/DBConfig"
 	Env "github.com/hzprog/restapi/Helpers"
@@ -17,12 +19,10 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var user User.User
-	var result []User.User
 
 	json.NewDecoder(r.Body).Decode(&user)
-	dbconfig.Db.Find(&result, "Username = ?", user.Username)
-
-	if len(result) > 0 {
+	dbconfig.Db.First(&user, "Username = ?", user.Username)
+	if user.ID != 0 {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode("username already exists")
 		return
@@ -45,7 +45,15 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	json.NewEncoder(w).Encode("user created : " + user.Username)
+	tokenString, err := GenerateJWT(user.Username)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode("Error couldn't create the user")
+		fmt.Println(err)
+		return
+	}
+
+	json.NewEncoder(w).Encode("user created : " + tokenString)
 }
 
 //create a book
@@ -70,7 +78,15 @@ func Signin(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode("username or password is incorrect")
 		return
 	}
-	json.NewEncoder(w).Encode("Welcome " + user.Username)
+	tokenString, err := GenerateJWT(user.Username)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode("Error couldn't create the user")
+		fmt.Println(err)
+		return
+	}
+
+	json.NewEncoder(w).Encode("Welcome " + user.Username + " token : " + tokenString)
 }
 
 //update a book
@@ -85,4 +101,23 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	json.NewEncoder(w).Encode("The user has been deleted successfully")
+}
+
+func GenerateJWT(username string) (string, error) {
+	token := jwt.New(jwt.SigningMethodHS256)
+
+	claims := token.Claims.(jwt.MapClaims)
+
+	claims["authorized"] = true
+	claims["client"] = username
+	claims["exp"] = time.Now().Add(time.Minute * 30).Unix()
+
+	tokenString, err := token.SignedString([]byte(Env.GetEnvVar("SIGNED_STRING")))
+
+	if err != nil {
+		fmt.Printf("Something Went Wrong: %s", err.Error())
+		return "", err
+	}
+
+	return tokenString, nil
 }
