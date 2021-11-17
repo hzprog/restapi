@@ -4,19 +4,19 @@ go 1.17
 
 require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/gorilla/handlers v1.5.1
 	github.com/gorilla/mux v1.8.0
 	github.com/spf13/viper v1.9.0
-	golang.org/x/crypto v0.0.0-20211108221036-ceb1ce70b4fa
-	gorm.io/gorm v1.22.2
+	golang.org/x/crypto v0.0.0-20211115234514-b4de73f9ece8
+	gorm.io/driver/sqlserver v1.2.1
+	gorm.io/gorm v1.22.3
 )
 
 require (
-	github.com/go-sql-driver/mysql v1.6.0 // indirect
-	gorm.io/driver/mysql v1.1.3
-)
-
-require (
+	github.com/denisenkom/go-mssqldb v0.11.0 // indirect
+	github.com/felixge/httpsnoop v1.0.2 // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
+	github.com/golang-sql/civil v0.0.0-20190719163853-cb61b32ac6fe // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.2 // indirect
