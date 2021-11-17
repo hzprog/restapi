@@ -53,7 +53,15 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	json.NewEncoder(w).Encode("user created : " + tokenString)
+	resp := make(map[string]string)
+	resp["token"] = tokenString
+	resp["message"] = "sign up successfully"
+	jsonResp, err := json.Marshal(resp)
+	if err != nil {
+		fmt.Printf("Error happened in JSON marshal. Err: %s", err)
+	}
+
+	w.Write(jsonResp)
 }
 
 //create a book
@@ -86,7 +94,15 @@ func Signin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	json.NewEncoder(w).Encode("Welcome " + user.Username + " token : " + tokenString)
+	resp := make(map[string]string)
+	resp["token"] = tokenString
+	resp["message"] = "success"
+	jsonResp, err := json.Marshal(resp)
+	if err != nil {
+		fmt.Printf("Error happened in JSON marshal. Err: %s", err)
+	}
+
+	w.Write(jsonResp)
 }
 
 //update a book
@@ -104,12 +120,13 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func GenerateJWT(username string) (string, error) {
-	token := jwt.New(jwt.SigningMethodHS256)
+	token := jwt.New(jwt.SigningMethodHS512)
 
 	claims := token.Claims.(jwt.MapClaims)
 
 	claims["authorized"] = true
 	claims["client"] = username
+	claims["intial_time"] = time.Now().Unix()
 	claims["exp"] = time.Now().Add(time.Minute * 30).Unix()
 
 	tokenString, err := token.SignedString([]byte(Env.GetEnvVar("SIGNED_STRING")))
