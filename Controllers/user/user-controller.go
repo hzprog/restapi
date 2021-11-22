@@ -65,7 +65,7 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 }
 
 //create a book
-func Signin(w http.ResponseWriter, r *http.Request) {
+func Login(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var user User.User
@@ -82,7 +82,7 @@ func Signin(w http.ResponseWriter, r *http.Request) {
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), password)
 	if err != nil {
 		fmt.Println(err)
-		w.WriteHeader(http.StatusNonAuthoritativeInfo)
+		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode("username or password is incorrect")
 		return
 	}

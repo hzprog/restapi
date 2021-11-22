@@ -6,7 +6,7 @@ import (
 	User "github.com/hzprog/restapi/Models/user"
 )
 
-func InitilizeMigation() {
+func InitializeMigration() {
 	//migrate the schemes
 	configdb.Db.AutoMigrate(Book.Book{}, User.User{})
 }

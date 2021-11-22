@@ -14,16 +14,16 @@ import (
 
 func main() {
 	configdb.Config()
-	models.InitilizeMigation()
-	router := routeHandler.InitilizeRouter()
+	models.InitializeMigration()
+	router := routeHandler.InitializeRouter()
 
 	port := Env.GetEnvVar("APP_PORT")
 
-	methodsAllowed := []string{"POST", "GET", "DELETE", "OPTIONS"}
+	methodsAllowed := []string{"POST", "GET", "DELETE", "OPTIONS", "HEAD", "PUT"}
 
 	origins := handlers.AllowedOrigins([]string{"*"})
 	methods := handlers.AllowedMethods(methodsAllowed)
-	headers := handlers.AllowedHeaders([]string{"X-Requested-With", "Accept", "Accept-Language", "Content-Type"})
+	headers := handlers.AllowedHeaders([]string{"X-Requested-With", "Accept", "Accept-Language", "Content-Type", "Authorization"})
 
 	log.Printf("Server started on: http://localhost:%s", port)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), handlers.CORS(headers, methods, origins)(router)))
