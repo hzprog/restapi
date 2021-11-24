@@ -19,6 +19,7 @@ import (
 func GetBooks(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	var books []Book.Book
+	var total int64
 
 	params := mux.Vars(r)
 
@@ -28,6 +29,7 @@ func GetBooks(w http.ResponseWriter, r *http.Request) {
 	if len(id) == 0 {
 		id = "0"
 	}
+	configdb.Db.Find(&books).Count(&total)
 
 	err := configdb.Db.Limit(limit).Find(&books, "id > ?", id).Error
 	if err != nil {
@@ -42,7 +44,21 @@ func GetBooks(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	json.NewEncoder(w).Encode(books)
+	// resp := make(map[string][]Book.Book)
+	// resp["books"] = books
+	// resp["message"] = "success"
+	// jsonResp, err := json.Marshal(resp)
+
+	booksData := map[string]interface{}{
+		"books": books,
+		"total": total,
+	}
+
+	data, _ := json.Marshal(booksData)
+	fmt.Println(string(data))
+
+	// json.NewEncoder(w).Encode(data)
+	w.Write(data)
 }
 
 //get a book with his id
