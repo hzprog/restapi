@@ -34,8 +34,6 @@ func GetBooks(w http.ResponseWriter, r *http.Request) {
 
 	offset, _ := strconv.Atoi(r.URL.Query().Get("offset"))
 
-	fmt.Println(limit, offset)
-
 	configdb.Db.Model(&Book.Book{}).Count(&total)
 
 	err := configdb.Db.Offset(offset).Limit(limit).Find(&books).Error
