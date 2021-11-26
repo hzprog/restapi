@@ -62,37 +62,6 @@ func GetBooks(w http.ResponseWriter, r *http.Request) {
 	w.Write(data)
 }
 
-func GetAllBooks(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	var books []Book.Book
-	var total int64
-
-	configdb.Db.Find(&books).Count(&total)
-
-	err := configdb.Db.Find(&books).Error
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode("Error couldn't find when retreiving books")
-		fmt.Println(err)
-		return
-	}
-
-	if len(books) < 1 {
-		json.NewEncoder(w).Encode("no book found try adding a book")
-		return
-	}
-
-	booksData := map[string]interface{}{
-		"books": books,
-		"total": total,
-	}
-
-	data, _ := json.Marshal(booksData)
-	fmt.Println(string(data))
-
-	w.Write(data)
-}
-
 //get a book with his id
 func GetBook(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
