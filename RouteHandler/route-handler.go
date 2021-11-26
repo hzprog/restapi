@@ -3,8 +3,6 @@ package routehandler
 import (
 	"net/http"
 
-	_ "github.com/hzprog/restapi/docs"
-
 	Book "github.com/hzprog/restapi/Controllers/book"
 	User "github.com/hzprog/restapi/Controllers/user"
 	Mid "github.com/hzprog/restapi/Middlewares"
