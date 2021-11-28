@@ -1,0 +1,114 @@
+basePath: /api
+consumes:
+- application/json
+definitions:
+  Book:
+    description: Book represents the model for an book
+    properties:
+      CreatedAt:
+        format: date-time
+        type: string
+      DeletedAt:
+        $ref: '#/definitions/DeletedAt'
+      ID:
+        format: uint64
+        type: integer
+      UpdatedAt:
+        format: date-time
+        type: string
+      author:
+        type: string
+        x-go-name: Author
+      image:
+        type: string
+        x-go-name: Image
+      isbn:
+        type: string
+        x-go-name: Isbn
+      title:
+        type: string
+        x-go-name: Title
+    type: object
+    x-go-package: github.com/hzprog/restapi/Models/book
+  DeletedAt:
+    $ref: '#/definitions/NullTime'
+  NullTime:
+    description: |-
+      NullTime implements the Scanner interface so
+      it can be used as a scan destination, similar to NullString.
+    properties:
+      Time:
+        format: date-time
+        type: string
+      Valid:
+        type: boolean
+    title: NullTime represents a time.Time that may be null.
+    type: object
+    x-go-package: database/sql
+host: http://localhost
+info:
+  description: Documentation for Book API
+  version: 1.0.0
+paths:
+  /books:
+    get:
+      operationId: getBooks
+      responses:
+        "200":
+          $ref: '#/responses/booksResponse'
+      summary: Return all books.
+      tags:
+      - books
+    post:
+      operationId: createBook
+      responses:
+        "200":
+          $ref: '#/responses/bookResponse'
+      summary: Create a book.
+      tags:
+      - books
+  /books/{id}:
+    delete:
+      description: Delete a book
+      operationId: deleteBook
+      parameters:
+      - description: The ID of the book to delete from the database
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+        x-go-name: Id
+      responses:
+        "201":
+          $ref: '#/responses/noContent'
+      tags:
+      - books
+produces:
+- application/json
+responses:
+  bookResponse:
+    description: The book created returns in the response
+    schema:
+      $ref: '#/definitions/Book'
+  booksResponse:
+    description: A list of all books returns in the response
+    schema:
+      items:
+        $ref: '#/definitions/Book'
+      type: array
+  noContent:
+    description: ""
+    headers:
+      book deleted successfully:
+        type: string
+schemes:
+- http
+security:
+- Bearer: []
+securityDefinitions:
+  Bearer:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

@@ -15,14 +15,12 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// GetBooks godoc
-// @Summary Get details of all books
-// @Description Get details of all books
-// @Tags orders
-// @Accept  json
-// @Produce  json
-// @Success 200 {array} Books
-// @Router /books [get]
+// swagger:route GET /books books getBooks
+// Return all books.
+// responses:
+//   200: booksResponse
+//
+// swagger:response booksResponse
 
 //get all books
 func GetBooks(w http.ResponseWriter, r *http.Request) {
@@ -78,15 +76,12 @@ func GetBook(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(book)
 }
 
-// Create Bookgodoc
-// @Summary Create a new Book
-// @Description Create a new Book with the input paylod
-// @Tags Books
-// @Accept  json
-// @Produce  json
-// @Param order body Book true "Create book"
-// @Success 200 {object} Order
-// @Router /orders [post]
+// swagger:route POST /books books createBook
+// Create a book.
+// responses:
+//   200: bookResponse
+//
+// swagger:response bookResponse
 
 //create a book
 func CreateBook(w http.ResponseWriter, r *http.Request) {
@@ -139,6 +134,12 @@ func UpdateBook(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(book)
 }
 
+// swagger:route DELETE /books/{id} books deleteBook
+// Delete a book
+//
+// responses:
+//	201: noContent
+
 //delete a book
 func DeleteBook(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
@@ -164,5 +165,6 @@ func DeleteBook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode("The book has been deleted successfully")
 }
