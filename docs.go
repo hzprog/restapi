@@ -2,7 +2,7 @@
 //
 //
 //     Schemes: http
-//     Host: localhost
+//     Host: localhost:8000
 //     BasePath: /api
 //     Version: 1.0.0
 //
@@ -24,35 +24,50 @@
 package main
 
 import (
+	"bytes"
 	Book "github.com/hzprog/restapi/Models/book"
 )
 
-// A list of all books returns in the response
+// The total of books
 // swagger:response booksResponse
 type booksResponseWrapper struct {
-	// all books in the system
 	//in:body
-	books []Book.Book
+	Body struct {
+		Books []Book.Book `json:"books"`
+		Total string      `json:"total"`
+	}
+}
+
+//swagger:parameters getBooks
+type booksParamsWrapper struct {
+	// the book created
+	// in:query
+	Limit  string `json:"limit"`
+	Offset string `json:"offset"`
+}
+
+type responseWrapper struct {
+	Body booksResponseWrapper
 }
 
 // The book created returns in the response
 // swagger:response bookResponse
 type bookResponseWrapper struct {
 	// the book created
-	//in:body
-	book Book.Book
+	// in:body
+	Body Book.Book
 }
 
-// swagger:parameters createBook
+// swagger:parameters updateBook
 type bookParamsWrapper struct {
 	// Book data structure to Update or Create.
 	// Note: the id field is ignored by update and create operations
 	// in: body
 	// required: true
-	book Book.Book
+	Body Book.Book
 }
 
-// swagger:parameters deleteBook
+// swagger:parameters deleteBook updateBook
 type bookIDParameterWrapper struct {
 	// The ID of the book to delete from the database
 	//in:path
@@ -65,7 +80,24 @@ type noContentResponse struct {
 	message string `json:"book deleted successfully"`
 }
 
-// title  string `json:"title"`
-// 	isbn   string `json:"isbn"`
-// 	author string `json:"author"`
-// 	image  string `json:"image"`
+// The from contains the create book
+// swagger:parameters createBook
+type formData struct {
+	// in: formData
+	Isbn string `json:"isbn"`
+	// in: formData
+	Title string `json:"title"`
+	// in: formData
+	Author string `json:"author"`
+}
+
+// Image contains the uploaded file data
+// swagger:parameters createBook
+type createBookFromDataParamsWrapper struct {
+	// Image desc.
+	//
+	// in: formData
+	//
+	// swagger:file
+	Image *bytes.Buffer `json:"image"`
+}

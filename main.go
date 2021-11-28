@@ -26,6 +26,7 @@ func main() {
 	origins := handlers.AllowedOrigins([]string{"*"})
 	methods := handlers.AllowedMethods(methodsAllowed)
 	headers := handlers.AllowedHeaders([]string{"X-Requested-With", "Accept", "Accept-Language", "Content-Type", "Authorization"})
+	// headers := handlers.AllowedHeaders([]string{"*"})
 
 	log.Printf("Server started on: http://localhost:%s", port)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), handlers.CORS(headers, methods, origins)(router)))

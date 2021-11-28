@@ -28,9 +28,16 @@ func GetBooks(w http.ResponseWriter, r *http.Request) {
 	var books []Book.Book
 	var total int64
 
-	limit, _ := strconv.Atoi(r.URL.Query().Get("limit"))
+	limit, noValidLimit := strconv.Atoi(r.URL.Query().Get("limit"))
+	if noValidLimit != nil {
+		limit = 5
+	}
 
-	offset, _ := strconv.Atoi(r.URL.Query().Get("offset"))
+	offset, noValidOffset := strconv.Atoi(r.URL.Query().Get("offset"))
+
+	if noValidOffset != nil {
+		offset = 0
+	}
 
 	configdb.Db.Model(&Book.Book{}).Count(&total)
 
@@ -87,6 +94,8 @@ func GetBook(w http.ResponseWriter, r *http.Request) {
 func CreateBook(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
+	fmt.Println("working")
+
 	uploadedFile := helpers.UploadFile(r, "image")
 
 	var book Book.Book
@@ -106,6 +115,13 @@ func CreateBook(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(book)
 }
+
+// swagger:route PUT /books/{id} books updateBook
+// Update a book.
+// responses:
+//   200: bookResponse
+//
+// swagger:response bookResponse
 
 //update a book
 func UpdateBook(w http.ResponseWriter, r *http.Request) {
@@ -135,7 +151,7 @@ func UpdateBook(w http.ResponseWriter, r *http.Request) {
 }
 
 // swagger:route DELETE /books/{id} books deleteBook
-// Delete a book
+// Delete a book from the database
 //
 // responses:
 //	201: noContent
@@ -143,6 +159,8 @@ func UpdateBook(w http.ResponseWriter, r *http.Request) {
 //delete a book
 func DeleteBook(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+
+	fmt.Println("works")
 
 	params := mux.Vars(r)
 

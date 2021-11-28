@@ -45,7 +45,7 @@ definitions:
     title: NullTime represents a time.Time that may be null.
     type: object
     x-go-package: database/sql
-host: http://localhost
+host: localhost:8000
 info:
   description: Documentation for Book API
   version: 1.0.0
@@ -53,6 +53,16 @@ paths:
   /books:
     get:
       operationId: getBooks
+      parameters:
+      - description: the book created
+        in: query
+        name: limit
+        type: string
+        x-go-name: Limit
+      - in: query
+        name: offset
+        type: string
+        x-go-name: Offset
       responses:
         "200":
           $ref: '#/responses/booksResponse'
@@ -61,6 +71,24 @@ paths:
       - books
     post:
       operationId: createBook
+      parameters:
+      - in: formData
+        name: isbn
+        type: string
+        x-go-name: Isbn
+      - in: formData
+        name: title
+        type: string
+        x-go-name: Title
+      - in: formData
+        name: author
+        type: string
+        x-go-name: Author
+      - description: Image desc.
+        in: formData
+        name: image
+        type: file
+        x-go-name: Image
       responses:
         "200":
           $ref: '#/responses/bookResponse'
@@ -69,7 +97,7 @@ paths:
       - books
   /books/{id}:
     delete:
-      description: Delete a book
+      description: Delete a book from the database
       operationId: deleteBook
       parameters:
       - description: The ID of the book to delete from the database
@@ -84,6 +112,30 @@ paths:
           $ref: '#/responses/noContent'
       tags:
       - books
+    put:
+      operationId: updateBook
+      parameters:
+      - description: |-
+          Book data structure to Update or Create.
+          Note: the id field is ignored by update and create operations
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/Book'
+      - description: The ID of the book to delete from the database
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+        x-go-name: Id
+      responses:
+        "200":
+          $ref: '#/responses/bookResponse'
+      summary: Create a book.
+      tags:
+      - books
 produces:
 - application/json
 responses:
@@ -92,11 +144,18 @@ responses:
     schema:
       $ref: '#/definitions/Book'
   booksResponse:
-    description: A list of all books returns in the response
+    description: The total of books
     schema:
-      items:
-        $ref: '#/definitions/Book'
-      type: array
+      properties:
+        books:
+          items:
+            $ref: '#/definitions/Book'
+          type: array
+          x-go-name: Books
+        total:
+          type: string
+          x-go-name: Total
+      type: object
   noContent:
     description: ""
     headers:

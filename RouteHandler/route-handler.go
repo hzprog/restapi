@@ -28,7 +28,7 @@ func InitializeRouter() *mux.Router {
 
 	// Create
 	api.HandleFunc("/books", Mid.IsAuthorized(Book.CreateBook)).Methods("POST")
-	api.HandleFunc("/books/{id:[0-9]+}", Mid.IsAuthorized(Book.UpdateBook)).Methods("put")
+	api.HandleFunc("/books/{id:[0-9]+}", Mid.IsAuthorized(Book.UpdateBook)).Methods("PUT")
 	api.HandleFunc("/books/{id:[0-9]+}", Mid.IsAuthorized(Book.DeleteBook)).Methods("DELETE")
 
 	//routes for user
