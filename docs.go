@@ -101,3 +101,24 @@ type createBookFromDataParamsWrapper struct {
 	// swagger:file
 	Image *bytes.Buffer `json:"image"`
 }
+
+// The body to pass to login
+//swagger:parameters login signup
+type loginParamsWrapper struct {
+	//in: body
+	//required: true
+	Body struct {
+		Username string `json:"username"`
+		Password string `json:"password"`
+	}
+}
+
+// The total of books
+// swagger:response authResponse
+type loginResponseWrapper struct {
+	//in:body
+	Body struct {
+		Message string `json:"message"`
+		Token   string `json:"token"`
+	}
+}

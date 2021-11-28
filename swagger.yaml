@@ -133,12 +133,69 @@ paths:
       responses:
         "200":
           $ref: '#/responses/bookResponse'
-      summary: Create a book.
+      summary: Update a book.
       tags:
       - books
+  /login:
+    post:
+      operationId: login
+      parameters:
+      - in: body
+        name: Body
+        required: true
+        schema:
+          properties:
+            password:
+              type: string
+              x-go-name: Password
+            username:
+              type: string
+              x-go-name: Username
+          type: object
+      responses:
+        "200":
+          $ref: '#/responses/authResponse'
+      summary: login to the book api.
+      security: []
+      tags:
+      - auth
+  /signup:
+    post:
+      operationId: signup
+      parameters:
+      - in: body
+        name: Body
+        required: true
+        schema:
+          properties:
+            password:
+              type: string
+              x-go-name: Password
+            username:
+              type: string
+              x-go-name: Username
+          type: object
+      responses:
+        "200":
+          $ref: '#/responses/authResponse'
+      security: []
+      summary: signup to the api.
+      tags:
+      - auth
 produces:
 - application/json
 responses:
+  authResponse:
+    description: The total of books
+    schema:
+      properties:
+        message:
+          type: string
+          x-go-name: Message
+        token:
+          type: string
+          x-go-name: Token
+      type: object
   bookResponse:
     description: The book created returns in the response
     schema:

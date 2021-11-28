@@ -14,7 +14,14 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-//get all books
+// swagger:route POST /signup auth signup
+// signup to the api.
+// responses:
+//   200: authResponse
+//
+// swagger:response authResponse
+
+//sign up
 func Signup(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -63,6 +70,13 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 
 	w.Write(jsonResp)
 }
+
+// swagger:route POST /login auth login
+// login to the book api.
+// responses:
+//   200: authResponse
+//
+// swagger:response authResponse
 
 //create a book
 func Login(w http.ResponseWriter, r *http.Request) {
