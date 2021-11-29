@@ -7,10 +7,10 @@ import (
 	"strings"
 
 	jwt "github.com/dgrijalva/jwt-go"
-	Env "github.com/hzprog/restapi/Helpers"
+	Helpers "github.com/hzprog/restapi/Helpers"
 )
 
-var mySigningKey = []byte(Env.GetEnvVar("SIGNED_STRING"))
+var mySigningKey = []byte(Helpers.GetEnvVar("SIGNED_STRING"))
 
 func IsAuthorized(endpoint func(http.ResponseWriter, *http.Request)) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -29,14 +29,14 @@ func IsAuthorized(endpoint func(http.ResponseWriter, *http.Request)) func(http.R
 
 			if err != nil {
 				fmt.Fprintf(w, err.Error())
+				Helpers.HttpError(w, 500, "Something went wrong", err)
 			}
 
 			if token.Valid {
 				endpoint(w, r)
 			}
 		} else {
-
-			fmt.Fprintf(w, "Not Authorized")
+			Helpers.HttpError(w, 500, "Not Authorized", nil)
 		}
 	}
 }
