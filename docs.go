@@ -1,3 +1,4 @@
+// Package classification Book API.
 // Documentation for Book API
 //
 //
@@ -118,7 +119,7 @@ type loginParamsWrapper struct {
 type loginResponseWrapper struct {
 	//in:body
 	Body struct {
-		Message string `json:"message"`
-		Token   string `json:"token"`
+		Success bool   `json:"success"`
+		Data    string `json:"data"`
 	}
 }
