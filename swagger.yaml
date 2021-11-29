@@ -48,6 +48,7 @@ definitions:
 host: localhost:8000
 info:
   description: Documentation for Book API
+  title: Book API.
   version: 1.0.0
 paths:
   /books:
@@ -68,7 +69,7 @@ paths:
           $ref: '#/responses/booksResponse'
       summary: Return all books.
       tags:
-      - books
+      - Books
     post:
       operationId: createBook
       parameters:
@@ -94,7 +95,7 @@ paths:
           $ref: '#/responses/bookResponse'
       summary: Create a book.
       tags:
-      - books
+      - Books
   /books/{id}:
     delete:
       description: Delete a book from the database
@@ -111,7 +112,7 @@ paths:
         "201":
           $ref: '#/responses/noContent'
       tags:
-      - books
+      - Books
     get:
       operationId: getOneBook
       parameters:
@@ -127,7 +128,7 @@ paths:
           $ref: '#/responses/bookResponse'
       summary: returns a book by his id.
       tags:
-      - books
+      - Books
     put:
       operationId: updateBook
       parameters:
@@ -151,7 +152,7 @@ paths:
           $ref: '#/responses/bookResponse'
       summary: Update a book.
       tags:
-      - books
+      - Books
   /login:
     post:
       operationId: login
@@ -174,7 +175,7 @@ paths:
       summary: login to the book api.
       security: []
       tags:
-      - auth
+      - Auth
   /signup:
     post:
       operationId: signup
@@ -197,7 +198,7 @@ paths:
       summary: signup to the api.
       security: []
       tags:
-      - auth
+      - Auth
 produces:
 - application/json
 responses:
@@ -205,12 +206,12 @@ responses:
     description: The total of books
     schema:
       properties:
-        message:
+        data:
           type: string
-          x-go-name: Message
-        token:
-          type: string
-          x-go-name: Token
+          x-go-name: Data
+        success:
+          type: boolean
+          x-go-name: Success
       type: object
   bookResponse:
     description: The book created returns in the response
