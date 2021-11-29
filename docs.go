@@ -67,9 +67,9 @@ type bookParamsWrapper struct {
 	Body Book.Book
 }
 
-// swagger:parameters deleteBook updateBook
+// swagger:parameters deleteBook updateBook getOneBook
 type bookIDParameterWrapper struct {
-	// The ID of the book to delete from the database
+	// The ID of the book to delete or get or update from the database
 	//in:path
 	//required: true
 	Id int `json:"id"`

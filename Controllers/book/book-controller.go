@@ -65,6 +65,13 @@ func GetBooks(w http.ResponseWriter, r *http.Request) {
 	w.Write(data)
 }
 
+// swagger:route GET /books/{id} books getOneBook
+// returns a book by his id.
+// responses:
+//   200: bookResponse
+//
+// swagger:response bookResponse
+
 //get a book with his id
 func GetBook(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")

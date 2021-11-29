@@ -100,7 +100,7 @@ paths:
       description: Delete a book from the database
       operationId: deleteBook
       parameters:
-      - description: The ID of the book to delete from the database
+      - description: The ID of the book to delete or get or update from the database
         format: int64
         in: path
         name: id
@@ -110,6 +110,22 @@ paths:
       responses:
         "201":
           $ref: '#/responses/noContent'
+      tags:
+      - books
+    get:
+      operationId: getOneBook
+      parameters:
+      - description: The ID of the book to delete or get or update from the database
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+        x-go-name: Id
+      responses:
+        "200":
+          $ref: '#/responses/bookResponse'
+      summary: returns a book by his id.
       tags:
       - books
     put:
@@ -123,7 +139,7 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/Book'
-      - description: The ID of the book to delete from the database
+      - description: The ID of the book to delete or get or update from the database
         format: int64
         in: path
         name: id
@@ -178,8 +194,8 @@ paths:
       responses:
         "200":
           $ref: '#/responses/authResponse'
-      security: []
       summary: signup to the api.
+      security: []
       tags:
       - auth
 produces:
