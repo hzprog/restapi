@@ -29,5 +29,5 @@ func main() {
 	// headers := handlers.AllowedHeaders([]string{"*"})
 
 	log.Printf("Server started on: http://localhost:%s", port)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), handlers.CORS(headers, methods, origins)(router)))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf("127.0.0.1:%s", port), handlers.CORS(headers, methods, origins)(router)))
 }
