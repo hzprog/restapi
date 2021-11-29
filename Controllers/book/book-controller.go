@@ -10,12 +10,13 @@ import (
 	helpers "github.com/hzprog/restapi/Helpers"
 
 	configdb "github.com/hzprog/restapi/DBConfig"
+	Response "github.com/hzprog/restapi/Helpers"
 	Book "github.com/hzprog/restapi/Models/book"
 
 	"github.com/gorilla/mux"
 )
 
-// swagger:route GET /books books getBooks
+// swagger:route GET /books Books getBooks
 // Return all books.
 // responses:
 //   200: booksResponse
@@ -39,19 +40,21 @@ func GetBooks(w http.ResponseWriter, r *http.Request) {
 		offset = 0
 	}
 
-	configdb.Db.Model(&Book.Book{}).Count(&total)
+	err := configdb.Db.Model(&Book.Book{}).Count(&total).Error
+	if err != nil {
+		Response.HttpError(w, http.StatusInternalServerError, "Error couldn't find when retreiving books", err)
+		return
+	}
 
-	err := configdb.Db.Offset(offset).Limit(limit).Find(&books).Error
+	err = configdb.Db.Offset(offset).Limit(limit).Find(&books).Error
 
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode("Error couldn't find when retreiving books")
-		fmt.Println(err)
+		Response.HttpError(w, http.StatusInternalServerError, "Error couldn't find when retreiving books", err)
 		return
 	}
 
 	if len(books) < 1 {
-		json.NewEncoder(w).Encode("no book found try adding a book")
+		Response.HttpError(w, http.StatusInternalServerError, "Error couldn't find when retreiving books", nil)
 		return
 	}
 
@@ -60,12 +63,10 @@ func GetBooks(w http.ResponseWriter, r *http.Request) {
 		"total": total,
 	}
 
-	data, _ := json.Marshal(booksData)
-
-	w.Write(data)
+	Response.HttpResponse(w, http.StatusOK, booksData)
 }
 
-// swagger:route GET /books/{id} books getOneBook
+// swagger:route GET /books/{id} Books getOneBook
 // returns a book by his id.
 // responses:
 //   200: bookResponse
@@ -82,15 +83,19 @@ func GetBook(w http.ResponseWriter, r *http.Request) {
 
 	err := configdb.Db.First(&book, params["id"]).Error
 	if err != nil {
-		json.NewEncoder(w).Encode("Can't find a book with that id")
-		fmt.Println(err)
+		Response.HttpError(w, http.StatusInternalServerError, "Can't find a book with that id", err)
 		return
 	}
 
-	json.NewEncoder(w).Encode(book)
+	// json.NewEncoder(w).Encode(book)
+	bookData := map[string]interface{}{
+		"book": book,
+	}
+
+	Response.HttpResponse(w, http.StatusOK, bookData)
 }
 
-// swagger:route POST /books books createBook
+// swagger:route POST /books Books createBook
 // Create a book.
 // responses:
 //   200: bookResponse
@@ -103,27 +108,34 @@ func CreateBook(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println("working")
 
-	uploadedFile := helpers.UploadFile(r, "image")
+	uploadedFile, error := helpers.UploadFile(r, "image")
+
+	if error != nil {
+		Response.HttpError(w, http.StatusInternalServerError, "Error couldn't create the book", error)
+		return
+	}
 
 	var book Book.Book
 
 	book.Isbn = r.FormValue("isbn")
 	book.Title = r.FormValue("title")
 	book.Author = r.FormValue("author")
-	book.Image = path.Base(uploadedFile.Name())
+	book.Image = path.Base(uploadedFile)
 
 	err := configdb.Db.Create(&book).Error
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode("Error couldn't create the book")
-		fmt.Println(err)
+		Response.HttpError(w, http.StatusInternalServerError, "Error couldn't create the book", err)
 		return
 	}
 
-	json.NewEncoder(w).Encode(book)
+	bookData := map[string]interface{}{
+		"book": book,
+	}
+
+	Response.HttpResponse(w, http.StatusOK, bookData)
 }
 
-// swagger:route PUT /books/{id} books updateBook
+// swagger:route PUT /books/{id} Books updateBook
 // Update a book.
 // responses:
 //   200: bookResponse
@@ -139,8 +151,7 @@ func UpdateBook(w http.ResponseWriter, r *http.Request) {
 
 	err := configdb.Db.First(&book, params["id"]).Error
 	if err != nil {
-		json.NewEncoder(w).Encode("Can't find a book with that id")
-		fmt.Println(err)
+		Response.HttpError(w, http.StatusInternalServerError, "Can't find a book with that id", err)
 		return
 	}
 
@@ -148,16 +159,18 @@ func UpdateBook(w http.ResponseWriter, r *http.Request) {
 
 	err = configdb.Db.Save(&book).Error
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode("Error couldn't update the book")
-		fmt.Println(err)
+		Response.HttpError(w, http.StatusInternalServerError, "Error couldn't update the book", err)
 		return
 	}
 
-	json.NewEncoder(w).Encode(book)
+	bookData := map[string]interface{}{
+		"book": book,
+	}
+
+	Response.HttpResponse(w, http.StatusOK, bookData)
 }
 
-// swagger:route DELETE /books/{id} books deleteBook
+// swagger:route DELETE /books/{id} Books deleteBook
 // Delete a book from the database
 //
 // responses:
@@ -167,16 +180,13 @@ func UpdateBook(w http.ResponseWriter, r *http.Request) {
 func DeleteBook(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	fmt.Println("works")
-
 	params := mux.Vars(r)
 
 	var book Book.Book
 
 	err := configdb.Db.First(&book, params["id"]).Error
 	if err != nil {
-		json.NewEncoder(w).Encode("Can't find a book with that id")
-		fmt.Println(err)
+		Response.HttpError(w, http.StatusInternalServerError, "Can't find a book with that id", err)
 		return
 	}
 
@@ -184,12 +194,9 @@ func DeleteBook(w http.ResponseWriter, r *http.Request) {
 
 	err = configdb.Db.Delete(&book).Error
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode("Error couldn't Delete the book")
-		fmt.Println(err)
+		Response.HttpError(w, http.StatusInternalServerError, "Error couldn't Delete the book", err)
 		return
 	}
 
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode("The book has been deleted successfully")
+	Response.HttpResponse(w, http.StatusCreated, "The book has been deleted successfully")
 }
