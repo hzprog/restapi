@@ -34,9 +34,14 @@ import (
 type booksResponseWrapper struct {
 	//in:body
 	Body struct {
-		Books []Book.Book `json:"books"`
-		Total string      `json:"total"`
+		Success bool              `json:"success"`
+		Data    booksResponseData `json:"data"`
 	}
+}
+
+type booksResponseData struct {
+	Books []Book.Book `json:"books"`
+	Total int         `json:"total"`
 }
 
 //swagger:parameters getBooks
@@ -47,16 +52,19 @@ type booksParamsWrapper struct {
 	Offset string `json:"offset"`
 }
 
-type responseWrapper struct {
-	Body booksResponseWrapper
-}
-
 // The book created returns in the response
 // swagger:response bookResponse
 type bookResponseWrapper struct {
 	// the book created
 	// in:body
-	Body Book.Book
+	Body struct {
+		Success bool             `json:"success"`
+		Data    bookResponseData `json:"data"`
+	}
+}
+
+type bookResponseData struct {
+	Book Book.Book `json:"book"`
 }
 
 // swagger:parameters updateBook
@@ -65,7 +73,11 @@ type bookParamsWrapper struct {
 	// Note: the id field is ignored by update and create operations
 	// in: body
 	// required: true
-	Body Book.Book
+	Body struct {
+		Isbn   string `json:"isbn"`
+		Title  string `json:"title"`
+		Author string `json:"author"`
+	}
 }
 
 // swagger:parameters deleteBook updateBook getOneBook
@@ -78,7 +90,11 @@ type bookIDParameterWrapper struct {
 
 // swagger:response noContent
 type noContentResponse struct {
-	message string `json:"book deleted successfully"`
+	//in: body
+	Body struct {
+		Success bool   `json:"success"`
+		Data    string `json:"data"`
+	}
 }
 
 // The from contains the create book

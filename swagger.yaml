@@ -45,6 +45,25 @@ definitions:
     title: NullTime represents a time.Time that may be null.
     type: object
     x-go-package: database/sql
+  bookResponseData:
+    properties:
+      book:
+        $ref: '#/definitions/Book'
+    type: object
+    x-go-package: github.com/hzprog/restapi
+  booksResponseData:
+    properties:
+      books:
+        items:
+          $ref: '#/definitions/Book'
+        type: array
+        x-go-name: Books
+      total:
+        format: int64
+        type: integer
+        x-go-name: Total
+    type: object
+    x-go-package: github.com/hzprog/restapi
 host: localhost:8000
 info:
   description: Documentation for Book API
@@ -139,7 +158,17 @@ paths:
         name: Body
         required: true
         schema:
-          $ref: '#/definitions/Book'
+          properties:
+            author:
+              type: string
+              x-go-name: Author
+            isbn:
+              type: string
+              x-go-name: Isbn
+            title:
+              type: string
+              x-go-name: Title
+          type: object
       - description: The ID of the book to delete or get or update from the database
         format: int64
         in: path
@@ -216,25 +245,34 @@ responses:
   bookResponse:
     description: The book created returns in the response
     schema:
-      $ref: '#/definitions/Book'
+      properties:
+        data:
+          $ref: '#/definitions/bookResponseData'
+        success:
+          type: boolean
+          x-go-name: Success
+      type: object
   booksResponse:
     description: The total of books
     schema:
       properties:
-        books:
-          items:
-            $ref: '#/definitions/Book'
-          type: array
-          x-go-name: Books
-        total:
-          type: string
-          x-go-name: Total
+        data:
+          $ref: '#/definitions/booksResponseData'
+        success:
+          type: boolean
+          x-go-name: Success
       type: object
   noContent:
     description: ""
-    headers:
-      book deleted successfully:
-        type: string
+    schema:
+      properties:
+        data:
+          type: string
+          x-go-name: Data
+        success:
+          type: boolean
+          x-go-name: Success
+      type: object
 schemes:
 - http
 security:
