@@ -2,7 +2,7 @@ package Book
 
 import (
 	"encoding/json"
-	"fmt"
+	// "fmt"
 	"net/http"
 	"path"
 	"strconv"
@@ -40,15 +40,12 @@ func GetBooks(w http.ResponseWriter, r *http.Request) {
 		offset = 0
 	}
 
-	err := configdb.Db.Model(&Book.Book{}).Count(&total).Error
-	if err != nil {
+	if err := configdb.Db.Model(&Book.Book{}).Count(&total).Error; err != nil {
 		Response.HttpError(w, http.StatusInternalServerError, "Error couldn't find when retreiving books", err)
 		return
 	}
 
-	err = configdb.Db.Offset(offset).Limit(limit).Find(&books).Error
-
-	if err != nil {
+	if err := configdb.Db.Offset(offset).Limit(limit).Find(&books).Error; err != nil {
 		Response.HttpError(w, http.StatusInternalServerError, "Error couldn't find when retreiving books", err)
 		return
 	}
@@ -81,8 +78,7 @@ func GetBook(w http.ResponseWriter, r *http.Request) {
 
 	var book Book.Book
 
-	err := configdb.Db.First(&book, params["id"]).Error
-	if err != nil {
+	if err := configdb.Db.First(&book, params["id"]).Error; err != nil {
 		Response.HttpError(w, http.StatusInternalServerError, "Can't find a book with that id", err)
 		return
 	}
@@ -106,8 +102,6 @@ func GetBook(w http.ResponseWriter, r *http.Request) {
 func CreateBook(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	fmt.Println("working")
-
 	uploadedFile, error := helpers.UploadFile(r, "image")
 
 	if error != nil {
@@ -122,8 +116,7 @@ func CreateBook(w http.ResponseWriter, r *http.Request) {
 	book.Author = r.FormValue("author")
 	book.Image = path.Base(uploadedFile)
 
-	err := configdb.Db.Create(&book).Error
-	if err != nil {
+	if err := configdb.Db.Create(&book).Error; err != nil {
 		Response.HttpError(w, http.StatusInternalServerError, "Error couldn't create the book", err)
 		return
 	}
@@ -149,16 +142,14 @@ func UpdateBook(w http.ResponseWriter, r *http.Request) {
 
 	var book Book.Book
 
-	err := configdb.Db.First(&book, params["id"]).Error
-	if err != nil {
+	if err := configdb.Db.First(&book, params["id"]).Error; err != nil {
 		Response.HttpError(w, http.StatusInternalServerError, "Can't find a book with that id", err)
 		return
 	}
 
 	json.NewDecoder(r.Body).Decode(&book)
 
-	err = configdb.Db.Save(&book).Error
-	if err != nil {
+	if err := configdb.Db.Save(&book).Error; err != nil {
 		Response.HttpError(w, http.StatusInternalServerError, "Error couldn't update the book", err)
 		return
 	}
@@ -184,16 +175,14 @@ func DeleteBook(w http.ResponseWriter, r *http.Request) {
 
 	var book Book.Book
 
-	err := configdb.Db.First(&book, params["id"]).Error
-	if err != nil {
+	if err := configdb.Db.First(&book, params["id"]).Error; err != nil {
 		Response.HttpError(w, http.StatusInternalServerError, "Can't find a book with that id", err)
 		return
 	}
 
 	helpers.DeleteFile(book.Image)
 
-	err = configdb.Db.Delete(&book).Error
-	if err != nil {
+	if err := configdb.Db.Delete(&book).Error; err != nil {
 		Response.HttpError(w, http.StatusInternalServerError, "Error couldn't Delete the book", err)
 		return
 	}
