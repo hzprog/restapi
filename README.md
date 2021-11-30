@@ -1,4 +1,4 @@
-# **GO REST API WITH MYSQL**
+# **GO REST API WITH SQL SERVER**
 
 ## **Description**
 
