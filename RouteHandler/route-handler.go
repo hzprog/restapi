@@ -34,6 +34,7 @@ func InitializeRouter() *mux.Router {
 	//routes for user
 	api.HandleFunc("/signup", User.Signup).Methods("POST")
 	api.HandleFunc("/login", User.Login).Methods("POST")
+	api.HandleFunc("/transfer", User.TransferMoney).Methods("POST")
 	// api.HandleFunc("/users/{id:[0-9]+}", User.UpdateUser).Methods("PUT")
 	// api.HandleFunc("/users/{id:[0-9]+}", User.DeleteUser).Methods("DELETE")
 
