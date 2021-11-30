@@ -139,3 +139,13 @@ type loginResponseWrapper struct {
 		Data    string `json:"data"`
 	}
 }
+
+//swagger:parameters transfer
+type transactionParameterWrapper struct {
+	//in: body
+	Body struct {
+		SenderId   int     `json:"sender_id"`
+		ReceiverId int     `json:"receiver_id"`
+		Amount     float64 `json:"amount"`
+	}
+}

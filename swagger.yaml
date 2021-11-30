@@ -228,6 +228,33 @@ paths:
       security: []
       tags:
       - Auth
+  /transfer:
+    post:
+      operationId: transfer
+      parameters:
+      - in: body
+        name: Body
+        schema:
+          properties:
+            amount:
+              format: double
+              type: number
+              x-go-name: Amount
+            receiver_id:
+              format: int64
+              type: integer
+              x-go-name: ReceiverId
+            sender_id:
+              format: int64
+              type: integer
+              x-go-name: SenderId
+          type: object
+      responses:
+        "200":
+          $ref: '#/responses/noContent'
+      summary: login to the book api.
+      tags:
+      - User
 produces:
 - application/json
 responses:
